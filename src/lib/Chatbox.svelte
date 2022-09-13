@@ -4,12 +4,12 @@
   import { firestore } from "../firebase";
   import { user } from "./user.store.js";
 
+  let box;
   let message = "";
   let currentUser = null;
   user.subscribe((u) => (currentUser = u));
 
   async function handleOnSubmit(e) {
-    debugger;
     const item = {
       text: message,
       from: currentUser,
@@ -18,11 +18,12 @@
     const messagesRef = collection(firestore, "messages");
     await addDoc(messagesRef, item);
     message = "";
+    box.scrollTo(0, box.scrollHeight);
   }
 </script>
 
 <div class="container">
-  <div class="messages-container">
+  <div bind:this={box} class="messages-container">
     <Messages />
   </div>
   <form class="new-message" on:submit|preventDefault={handleOnSubmit}>

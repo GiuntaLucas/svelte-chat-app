@@ -6,10 +6,15 @@
   import ProfileImg from "./ProfileImg.svelte";
   import { user } from "./user.store.js";
 
+  import { fly } from "svelte/transition";
+
   let currentUser = null;
   user.subscribe((u) => (currentUser = u));
-  
-  const messageRef = query(collection(firestore, "messages"), orderBy('date', 'asc'));
+
+  const messageRef = query(
+    collection(firestore, "messages"),
+    orderBy("date", "asc")
+  );
   const messages = collectionData(messageRef, { idField: "id" }).pipe(
     startWith([]),
     map((messages) => {
@@ -22,7 +27,12 @@
 </script>
 
 {#each $messages as message}
-  <div class="content {currentUser === message.from ? 'me' : 'other'}">
+  <div
+    transition:fly={currentUser === message.from
+      ? { x: 200, duration: 800 }
+      : { x: -200, duration: 800 }}
+    class="content {currentUser === message.from ? 'me' : 'other'}"
+  >
     <div class="message">
       {message.text}
     </div>
@@ -33,7 +43,6 @@
   <!-- <div class="date">
     <i>{message.date.toLocaleTimeString()}</i>
   </div> -->
- 
 {/each}
 
 <style>
@@ -51,10 +60,10 @@
   .other {
     flex-direction: row;
   }
-  .message{
+  .message {
     order: 1;
   }
-  .date{
+  .date {
     font-size: 8px;
   }
 </style>
